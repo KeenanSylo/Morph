@@ -5,20 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Morph</title>
     <script type="importmap">
-    {
-      "imports": {
-        "react": "https://aistudiocdn.com/react@^19.2.0",
-        "react-dom/client": "https://aistudiocdn.com/react-dom@^19.2.0/client",
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-        "react/": "https://aistudiocdn.com/react@^19.2.0/",
-        "clsx": "https://aistudiocdn.com/clsx@^2.1.1",
-        "tailwind-merge": "https://aistudiocdn.com/tailwind-merge@^3.4.0",
-        "tailwindcss": "https://aistudiocdn.com/tailwindcss@^4.1.17",
-        "zustand": "https://aistudiocdn.com/zustand@^5.0.3",
-        "lucide-react": "https://aistudiocdn.com/lucide-react@^0.469.0"
-      }
-    }
-    </script>
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "clsx": "https://esm.sh/clsx",
+    "tailwind-merge": "https://esm.sh/tailwind-merge",
+    "zustand": "https://esm.sh/zustand@4.5.0?external=react",
+    "lucide-react": "https://esm.sh/lucide-react?external=react",
+    "three": "https://esm.sh/three@0.160.0",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.15.16?external=react,react-dom,three",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "tailwindcss": "https://aistudiocdn.com/tailwindcss@^4.1.17"
+  }
+}
+</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -33,10 +37,28 @@
             fontFamily: {
               sans: ["Inter", "sans-serif"],
             },
+            animation: {
+              'float': 'float 6s ease-in-out infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' },
+              }
+            }
           },
         },
       }
     </script>
+    <style>
+      html, body, #root { 
+        height: 100%; 
+        width: 100%;
+        margin: 0; 
+        padding: 0;
+        background-color: #020617; 
+      }
+    </style>
   <link rel="stylesheet" href="/index.css">
 </head>
   <body class="bg-slate-950 text-white overflow-hidden">
