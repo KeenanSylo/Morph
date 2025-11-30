@@ -17,6 +17,7 @@
     "lucide-react": "latest",
     "three": "0.160.0",
     "@react-three/fiber": "8.15.16",
+    "@react-three/drei": "9.99.0",
     "html-to-image": "1.11.11",
     "downloadjs": "1.4.7",
     "tailwindcss": "^4.1.17"

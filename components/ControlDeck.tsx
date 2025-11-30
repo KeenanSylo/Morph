@@ -23,7 +23,6 @@ export default function ControlDeck() {
   const textPrimary = darkMode ? "text-neutral-200" : "text-slate-900";
   const textSecondary = darkMode ? "text-neutral-500" : "text-slate-400";
   const labelClass = darkMode ? "text-neutral-400" : "text-slate-600";
-  const bgInput = darkMode ? "bg-white/5" : "bg-slate-200";
   const borderDivider = darkMode ? "border-white/5" : "border-slate-200";
   
   // Updated Glass Style: Black/60 background, Amber shadow
@@ -59,21 +58,22 @@ export default function ControlDeck() {
         {isCollapsed ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>
 
-      <GlassPanel className={cn("w-80 h-full flex flex-col overflow-hidden transition-colors duration-300", glassStyle)}>
-        {/* Header */}
-        <div className={cn("p-6 pb-4 border-b flex justify-between items-center", borderDivider)}>
+      {/* COMPACT WIDTH: w-72 instead of w-80 */}
+      <GlassPanel className={cn("w-72 h-full flex flex-col overflow-hidden transition-colors duration-300", glassStyle)}>
+        {/* Header - Reduced Padding */}
+        <div className={cn("p-5 pb-3 border-b flex justify-between items-center", borderDivider)}>
           <div>
-            <h2 className={cn("text-xl font-bold tracking-tight mb-1", textPrimary)}>Morph</h2>
-            <p className={cn("text-xs uppercase tracking-widest font-semibold", darkMode ? "text-orange-500" : "text-blue-500")}>Generator</p>
+            <h2 className={cn("text-lg font-bold tracking-tight mb-0.5", textPrimary)}>Morph</h2>
+            <p className={cn("text-[10px] uppercase tracking-widest font-semibold", darkMode ? "text-orange-500" : "text-blue-500")}>Generator</p>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className={cn("flex p-2 gap-2", darkMode ? "bg-black/20" : "bg-slate-100/50")}>
+        {/* Tabs - Reduced Padding */}
+        <div className={cn("flex p-1.5 gap-1.5", darkMode ? "bg-black/20" : "bg-slate-100/50")}>
           <button
             onClick={() => setActiveTab('shape')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all",
+              "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-medium transition-all",
               activeTab === 'shape' ? activeTabStyle : inactiveTabStyle
             )}
           >
@@ -82,7 +82,7 @@ export default function ControlDeck() {
           <button
             onClick={() => setActiveTab('style')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-all",
+              "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-medium transition-all",
               activeTab === 'style' ? activeTabStyle : inactiveTabStyle
             )}
           >
@@ -90,37 +90,37 @@ export default function ControlDeck() {
           </button>
         </div>
 
-        {/* Controls Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+        {/* Controls Area - Reduced Padding & Spacing */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-6">
           
           {/* SHAPE CONTROLS */}
           {activeTab === 'shape' && (
             <>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <LabelValue label="Chaos" value={chaos} darkMode={darkMode} />
                 <RangeInput value={chaos} onChange={setChaos} darkMode={darkMode} />
                 <p className={cn("text-[10px]", textSecondary)}>
-                  Amplitude of distortion (0% = Circle)
+                  Amplitude of distortion
                 </p>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <LabelValue label="Smoothness" value={smoothness} darkMode={darkMode} />
                 <RangeInput value={smoothness} onChange={setSmoothness} min={3} max={15} darkMode={darkMode} />
                 <p className={cn("text-[10px]", textSecondary)}>
-                  Vertex count (Low = Geometric, High = Liquid)
+                  Vertex count
                 </p>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <LabelValue label="Warp" value={warp} darkMode={darkMode} />
                 <RangeInput value={warp} onChange={setWarp} darkMode={darkMode} />
                 <p className={cn("text-[10px]", textSecondary)}>
-                  Noise detail and frequency
+                  Noise frequency
                 </p>
               </div>
 
-              <div className={cn("space-y-4 border-t pt-4", borderDivider)}>
+              <div className={cn("space-y-3 border-t pt-3", borderDivider)}>
                 <LabelValue label="Motion Speed" value={motionSpeed} darkMode={darkMode} />
                 <RangeInput value={motionSpeed} onChange={setMotionSpeed} darkMode={darkMode} />
               </div>
@@ -130,15 +130,15 @@ export default function ControlDeck() {
           {/* STYLE CONTROLS */}
           {activeTab === 'style' && (
             <>
-              <div className="space-y-4">
-                <label className={cn("font-medium text-sm", labelClass)}>Fill Type</label>
-                <div className="grid grid-cols-3 gap-2">
+              <div className="space-y-3">
+                <label className={cn("font-medium text-xs", labelClass)}>Fill Type</label>
+                <div className="grid grid-cols-3 gap-1.5">
                   {['solid', 'linear', 'radial'].map((type) => (
                     <button
                       key={type}
                       onClick={() => setFillType(type as any)}
                       className={cn(
-                        "px-2 py-2 rounded text-xs border transition-all capitalize",
+                        "px-1 py-1.5 rounded text-[10px] border transition-all capitalize font-medium",
                         fillType === type 
                           ? (darkMode ? "bg-orange-500 border-orange-500 text-white" : "bg-blue-600 border-blue-600 text-white")
                           : cn("border-transparent", darkMode ? "bg-white/5 text-neutral-400 hover:bg-white/10" : "bg-slate-100 text-slate-500 hover:bg-slate-200")
@@ -150,9 +150,9 @@ export default function ControlDeck() {
                 </div>
               </div>
 
-              <div className={cn("space-y-4 pt-4 border-t", borderDivider)}>
-                <label className={cn("font-medium text-sm", labelClass)}>Colors</label>
-                <div className="flex gap-4">
+              <div className={cn("space-y-3 pt-3 border-t", borderDivider)}>
+                <label className={cn("font-medium text-xs", labelClass)}>Colors</label>
+                <div className="flex gap-3">
                   <ColorPicker 
                     color={gradientColors[0]} 
                     onChange={(c) => setGradientColor(0, c)} 
@@ -170,7 +170,7 @@ export default function ControlDeck() {
                 </div>
               </div>
 
-              <div className={cn("space-y-4 pt-4 border-t", borderDivider)}>
+              <div className={cn("space-y-3 pt-3 border-t", borderDivider)}>
                 <LabelValue label="Glow Intensity" value={glowIntensity} darkMode={darkMode} />
                 <RangeInput value={glowIntensity} onChange={setGlowIntensity} darkMode={darkMode} />
               </div>
@@ -179,7 +179,7 @@ export default function ControlDeck() {
 
         </div>
         
-        <div className={cn("p-4 text-[10px] text-center border-t", borderDivider, darkMode ? "bg-black/40 text-neutral-600" : "bg-slate-50 text-slate-400")}>
+        <div className={cn("p-3 text-[10px] text-center border-t", borderDivider, darkMode ? "bg-black/40 text-neutral-600" : "bg-slate-50 text-slate-400")}>
           v1.5 Deep Ember
         </div>
       </GlassPanel>
@@ -189,9 +189,9 @@ export default function ControlDeck() {
 
 // Subcomponents
 const LabelValue = ({ label, value, darkMode }: { label: string, value: number, darkMode: boolean }) => (
-  <div className="flex justify-between text-sm items-center">
+  <div className="flex justify-between text-xs items-center">
     <label className={cn("font-medium", darkMode ? "text-neutral-400" : "text-slate-600")}>{label}</label>
-    <span className={cn("font-mono text-xs px-2 py-1 rounded border", darkMode ? "text-neutral-400 bg-white/5 border-white/5" : "text-slate-500 bg-slate-100 border-slate-200")}>{value}</span>
+    <span className={cn("font-mono text-[10px] px-1.5 py-0.5 rounded border", darkMode ? "text-neutral-400 bg-white/5 border-white/5" : "text-slate-500 bg-slate-100 border-slate-200")}>{value}</span>
   </div>
 );
 
@@ -203,7 +203,7 @@ const RangeInput = ({ value, onChange, min=0, max=100, darkMode }: { value: numb
     value={value}
     onChange={(e) => onChange(Number(e.target.value))}
     className={cn(
-      "w-full h-1.5 rounded-lg appearance-none cursor-pointer outline-none",
+      "w-full h-1 rounded-lg appearance-none cursor-pointer outline-none",
       // Orange accent for dark mode, Blue for light mode
       darkMode ? "bg-white/10 accent-orange-500 hover:accent-orange-400" : "bg-slate-200 accent-blue-600 hover:accent-blue-500"
     )}
@@ -211,9 +211,9 @@ const RangeInput = ({ value, onChange, min=0, max=100, darkMode }: { value: numb
 );
 
 const ColorPicker = ({ color, onChange, label, darkMode }: { color: string, onChange: (c: string) => void, label: string, darkMode: boolean }) => (
-  <div className="flex-1 space-y-2">
-    <span className={cn("text-[10px] uppercase tracking-wider", darkMode ? "text-neutral-500" : "text-slate-400")}>{label}</span>
-    <div className={cn("relative h-10 w-full rounded-lg overflow-hidden ring-1 group", darkMode ? "ring-white/10" : "ring-slate-200")}>
+  <div className="flex-1 space-y-1.5">
+    <span className={cn("text-[9px] uppercase tracking-wider", darkMode ? "text-neutral-500" : "text-slate-400")}>{label}</span>
+    <div className={cn("relative h-8 w-full rounded-md overflow-hidden ring-1 group", darkMode ? "ring-white/10" : "ring-slate-200")}>
       <div className="absolute inset-0" style={{ backgroundColor: color }} />
       <input
         type="color"
@@ -222,6 +222,6 @@ const ColorPicker = ({ color, onChange, label, darkMode }: { color: string, onCh
         className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] opacity-0 cursor-pointer"
       />
     </div>
-    <div className={cn("text-[10px] font-mono text-center", darkMode ? "text-white/30" : "text-slate-400")}>{color}</div>
+    <div className={cn("text-[9px] font-mono text-center", darkMode ? "text-white/30" : "text-slate-400")}>{color}</div>
   </div>
 );

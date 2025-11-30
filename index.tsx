@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import RootLayout from "./app/layout";
 import LandingPage from "./app/page";
 import CreatePage from "./app/create/page";
+import GradientPage from "./app/gradient/page";
 
 // Error Boundary to catch crashes and display them
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -53,6 +54,8 @@ const App = () => {
   let Component;
   if (route === "/create") {
     Component = CreatePage;
+  } else if (route === "/gradient") {
+    Component = GradientPage;
   } else {
     Component = LandingPage;
   }
@@ -75,4 +78,3 @@ if (container) {
     </React.StrictMode>
   );
 }
-

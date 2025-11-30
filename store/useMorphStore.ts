@@ -3,20 +3,24 @@ import { create } from 'zustand';
 interface MorphState {
   shapeMode: 'blob' | 'wave';
   
-  // New Shape Params
-  chaos: number;      // 0-100: Amplitude of distortion (Replaces Complexity)
-  smoothness: number; // 3-20: Vertex count (Replaces internal point count logic)
-  warp: number;       // 0-100: Noise frequency (Replaces hardcoded freq)
-  motionSpeed: number; // 0-100
+  // Blob Tool Params
+  chaos: number;
+  smoothness: number;
+  warp: number;
+  motionSpeed: number;
 
-  // Style Properties
+  // Blob Style Properties
   fillType: 'solid' | 'linear' | 'radial';
-  gradientColors: string[]; // [Color1, Color2]
-  glowIntensity: number; // 0 to 100
+  gradientColors: string[];
+  glowIntensity: number;
+  
+  // Gradient Blur Tool Params
+  blurColors: string[];
+  noiseScale: number;
   
   showSafeZone: boolean;
   isPaused: boolean;
-  darkMode: boolean; // New Theme State
+  darkMode: boolean;
 }
 
 interface MorphActions {
@@ -30,6 +34,10 @@ interface MorphActions {
   setFillType: (type: 'solid' | 'linear' | 'radial') => void;
   setGradientColor: (index: number, color: string) => void;
   setGlowIntensity: (val: number) => void;
+  
+  // Gradient Tool Actions
+  setBlurColor: (index: number, color: string) => void;
+  setNoiseScale: (val: number) => void;
   
   setShowSafeZone: (show: boolean) => void;
   setIsPaused: (paused: boolean) => void;
@@ -46,13 +54,16 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   motionSpeed: 10,
   
   fillType: 'linear',
-  // Deep Ember Theme: Amber-500 to Red-600
   gradientColors: ['#F59E0B', '#DC2626'], 
   glowIntensity: 20,
   
+  // Default values for Gradient Blur Tool (Deep Ember Theme)
+  blurColors: ['#0f172a', '#7c2d12', '#431407', '#000000'],
+  noiseScale: 1.5,
+  
   showSafeZone: false,
   isPaused: false,
-  darkMode: false, // Default to Light Mode
+  darkMode: true, // Deep Ember defaults to dark
 
   setShapeMode: (mode) => set({ shapeMode: mode }),
   
@@ -69,11 +80,18 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   }),
   setGlowIntensity: (val) => set({ glowIntensity: val }),
   
+  setBlurColor: (index, color) => set((state) => {
+    const newColors = [...state.blurColors];
+    newColors[index] = color;
+    return { blurColors: newColors };
+  }),
+  setNoiseScale: (val) => set({ noiseScale: val }),
+  
   setShowSafeZone: (show) => set({ showSafeZone: show }),
   setIsPaused: (paused) => set({ isPaused: paused }),
   setDarkMode: (dark) => set({ darkMode: dark }),
   
-  randomize: () => set(() => {
+  randomize: () => set((state) => {
     const randomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
     return {
       chaos: 10 + Math.floor(Math.random() * 70),
@@ -82,6 +100,9 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
       fillType: Math.random() > 0.5 ? 'linear' : 'radial',
       gradientColors: [randomColor(), randomColor()],
       glowIntensity: 10 + Math.floor(Math.random() * 50),
+      // Randomize blur colors too if needed
+      blurColors: [randomColor(), randomColor(), randomColor(), randomColor()],
+      noiseScale: 0.5 + Math.random() * 2,
     };
   }),
 }));
