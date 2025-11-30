@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("min-h-screen bg-slate-950 text-white antialiased font-sans selection:bg-white/20")}>
+    <div className={cn("min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-black text-white antialiased font-sans selection:bg-orange-500/30")}>
       {children}
     </div>
   );

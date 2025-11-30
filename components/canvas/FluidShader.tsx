@@ -2,6 +2,27 @@ import React, { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
+// Declare R3F elements for TypeScript if they are not automatically picked up
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      mesh: any;
+      planeGeometry: any;
+      shaderMaterial: any;
+    }
+  }
+  // Also augment React.JSX for newer React versions
+  namespace React {
+    namespace JSX {
+      interface IntrinsicElements {
+        mesh: any;
+        planeGeometry: any;
+        shaderMaterial: any;
+      }
+    }
+  }
+}
+
 // Shader definition
 const vertexShader = `
   varying vec2 vUv;
@@ -46,9 +67,10 @@ function GradientPlane() {
   const shaderArgs = useMemo(() => ({
     uniforms: {
       uTime: { value: 0 },
-      uColor1: { value: new THREE.Color("#1e1b4b") }, // Deep Indigo
-      uColor2: { value: new THREE.Color("#172554") }, // Deep Blue
-      uColor3: { value: new THREE.Color("#312e81") }, // Deep Purple
+      // CHANGED: Light pastel colors for the new light theme
+      uColor1: { value: new THREE.Color("#fef3c7") }, // Amber-100
+      uColor2: { value: new THREE.Color("#ffe4e6") }, // Rose-100
+      uColor3: { value: new THREE.Color("#e0f2fe") }, // Sky-100
     },
     vertexShader,
     fragmentShader,
