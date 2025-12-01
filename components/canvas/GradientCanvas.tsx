@@ -22,17 +22,27 @@ declare global {
 interface GradientCanvasProps {
   colors: string[];
   noiseScale: number;
+  gradientSpeed: number;
+  loopDuration: number;
+  isPaused: boolean;
 }
 
-const GradientScene = ({ colors, noiseScale }: GradientCanvasProps) => {
+const GradientScene = ({ colors, noiseScale, gradientSpeed, loopDuration, isPaused }: GradientCanvasProps) => {
   const materialRef = useRef<any>(null);
-  const { viewport } = useThree(); // Get current viewport dimensions
+  const { viewport } = useThree(); 
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (materialRef.current) {
-      materialRef.current.uTime = state.clock.getElapsedTime();
+      if (!isPaused) {
+        // Increment time manually to allow pausing
+        materialRef.current.uTime += delta;
+      }
+      
       materialRef.current.uNoiseScale = noiseScale;
-      // Optimize: Only create new Color objects if necessary, though simpler here to just assign
+      materialRef.current.uSpeed = gradientSpeed;
+      materialRef.current.uLoopDuration = loopDuration;
+      
+      // Update colors
       materialRef.current.uColor1.set(colors[0]);
       materialRef.current.uColor2.set(colors[1]);
       materialRef.current.uColor3.set(colors[2]);
@@ -41,7 +51,6 @@ const GradientScene = ({ colors, noiseScale }: GradientCanvasProps) => {
   });
 
   return (
-    // Scale plane to match viewport exactly (fullscreen background)
     <Plane args={[1, 1]} scale={[viewport.width, viewport.height, 1]}>
       <gradientShaderMaterial 
         ref={materialRef} 
@@ -50,20 +59,30 @@ const GradientScene = ({ colors, noiseScale }: GradientCanvasProps) => {
         uColor3={new THREE.Color(colors[2])}
         uColor4={new THREE.Color(colors[3])}
         uNoiseScale={noiseScale}
+        uSpeed={gradientSpeed}
+        uLoopDuration={loopDuration}
       />
     </Plane>
   );
 };
 
-export default function GradientCanvas({ colors, noiseScale }: GradientCanvasProps) {
+export default function GradientCanvas({ colors, noiseScale, gradientSpeed, loopDuration, isPaused }: GradientCanvasProps) {
   return (
     <div className="absolute inset-0 w-full h-full z-0">
       <Canvas 
+        // ID used for video capture
+        id="gradient-canvas-node"
         camera={{ position: [0, 0, 1] }} 
         resize={{ scroll: false }}
         gl={{ preserveDrawingBuffer: true }}
       >
-        <GradientScene colors={colors} noiseScale={noiseScale} />
+        <GradientScene 
+            colors={colors} 
+            noiseScale={noiseScale} 
+            gradientSpeed={gradientSpeed} 
+            loopDuration={loopDuration}
+            isPaused={isPaused} 
+        />
       </Canvas>
     </div>
   );

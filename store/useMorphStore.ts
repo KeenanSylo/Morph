@@ -17,6 +17,8 @@ interface MorphState {
   // Gradient Blur Tool Params
   blurColors: string[];
   noiseScale: number;
+  gradientSpeed: number;
+  loopDuration: number; // New: Length of the loop in seconds
   
   showSafeZone: boolean;
   isPaused: boolean;
@@ -38,6 +40,8 @@ interface MorphActions {
   // Gradient Tool Actions
   setBlurColor: (index: number, color: string) => void;
   setNoiseScale: (val: number) => void;
+  setGradientSpeed: (val: number) => void;
+  setLoopDuration: (val: number) => void; // New
   
   setShowSafeZone: (show: boolean) => void;
   setIsPaused: (paused: boolean) => void;
@@ -59,7 +63,9 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   
   // Default values for Gradient Blur Tool (Deep Ember Theme)
   blurColors: ['#0f172a', '#7c2d12', '#431407', '#000000'],
-  noiseScale: 1.5,
+  noiseScale: 1.0,
+  gradientSpeed: 1.0,
+  loopDuration: 10, // Default 10s loop
   
   showSafeZone: false,
   isPaused: false,
@@ -86,6 +92,8 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
     return { blurColors: newColors };
   }),
   setNoiseScale: (val) => set({ noiseScale: val }),
+  setGradientSpeed: (val) => set({ gradientSpeed: val }),
+  setLoopDuration: (val) => set({ loopDuration: val }),
   
   setShowSafeZone: (show) => set({ showSafeZone: show }),
   setIsPaused: (paused) => set({ isPaused: paused }),
@@ -100,9 +108,9 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
       fillType: Math.random() > 0.5 ? 'linear' : 'radial',
       gradientColors: [randomColor(), randomColor()],
       glowIntensity: 10 + Math.floor(Math.random() * 50),
-      // Randomize blur colors too if needed
       blurColors: [randomColor(), randomColor(), randomColor(), randomColor()],
       noiseScale: 0.5 + Math.random() * 2,
+      gradientSpeed: 0.5 + Math.random() * 1.5,
     };
   }),
 }));

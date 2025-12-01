@@ -10,7 +10,9 @@ const GradientShaderMaterial = shaderMaterial(
     uColor2: new THREE.Color('#00ff00'),
     uColor3: new THREE.Color('#0000ff'),
     uColor4: new THREE.Color('#ffff00'),
-    uNoiseScale: 1.0,
+    uNoiseScale: 1.0, // Acts as "Focus/Blur" size
+    uSpeed: 1.0,      // Acts as "Amplitude" of the orbits
+    uLoopDuration: 10.0,
   },
   // Vertex Shader
   `
@@ -20,7 +22,7 @@ const GradientShaderMaterial = shaderMaterial(
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
-  // Fragment Shader
+  // Fragment Shader (Orbital Diffusion)
   `
     precision mediump float;
     uniform float uTime;
@@ -29,60 +31,63 @@ const GradientShaderMaterial = shaderMaterial(
     uniform vec3 uColor3;
     uniform vec3 uColor4;
     uniform float uNoiseScale;
+    uniform float uSpeed;
+    uniform float uLoopDuration;
     varying vec2 vUv;
-
-    // Simplex 2D noise
-    vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
-    float snoise(vec2 v){
-      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
-               -0.577350269189626, 0.024390243902439);
-      vec2 i  = floor(v + dot(v, C.yy) );
-      vec2 x0 = v -   i + dot(i, C.xx);
-      vec2 i1;
-      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-      vec4 x12 = x0.xyxy + C.xxzz;
-      x12.xy -= i1;
-      i = mod(i, 289.0);
-      vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
-      + i.x + vec3(0.0, i1.x, 1.0 ));
-      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-      m = m*m ;
-      m = m*m ;
-      vec3 x = 2.0 * fract(p * C.www) - 1.0;
-      vec3 h = abs(x) - 0.5;
-      vec3 ox = floor(x + 0.5);
-      vec3 a0 = x - ox;
-      m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
-      vec3 g;
-      g.x  = a0.x  * x0.x  + h.x  * x0.y;
-      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-      return 130.0 * dot(m, g);
-    }
 
     void main() {
       vec2 uv = vUv;
       
-      // Slow organic movement ("Aurora" feel)
-      float t = uTime * 0.15;
+      // Constants for math
+      float PI = 3.14159265359;
       
-      // Calculate noise offsets based on time and UV
-      // Layer 1: Broad movement
-      float n1 = snoise(uv * uNoiseScale * 0.5 + vec2(t * 0.2, t * 0.1));
+      // Calculate phase based on Loop Duration for perfect periodicity
+      // The angle goes from 0 to 2PI exactly over uLoopDuration seconds
+      float theta = (uTime / uLoopDuration) * 2.0 * PI;
       
-      // Layer 2: Detailed ripples
-      float n2 = snoise(uv * uNoiseScale * 1.5 - vec2(t * 0.3, t * 0.4));
+      // Define 4 Orbital Centers (Light Sources)
+      // They move in perfect circles or Lissajous figures where frequencies are integers
+      // uSpeed controls the Radius of the orbit (how much they move)
+      float radius = 0.3 * uSpeed;
       
-      // Combine noise for distortion
-      vec2 distortedUV = uv + vec2(n1, n2) * 0.3;
-
-      // Smooth mixing of 4 colors using the distorted UVs
-      vec3 top = mix(uColor1, uColor2, smoothstep(0.0, 1.0, distortedUV.x));
-      vec3 bot = mix(uColor3, uColor4, smoothstep(0.0, 1.0, distortedUV.x));
-      vec3 finalColor = mix(bot, top, smoothstep(0.0, 1.0, distortedUV.y));
+      // Source 1: Circular motion
+      vec2 p1 = vec2(0.2, 0.2) + vec2(cos(theta), sin(theta)) * radius;
       
-      // Add subtle dither/grain to prevent banding
+      // Source 2: Counter-circular, phase shifted
+      vec2 p2 = vec2(0.8, 0.2) + vec2(cos(theta + PI), sin(theta - PI*0.5)) * radius;
+      
+      // Source 3: Vertical/Horizontal oscillation (2x frequency still loops perfectly)
+      vec2 p3 = vec2(0.8, 0.8) + vec2(sin(theta), cos(theta)) * radius;
+      
+      // Source 4: Complex loop
+      vec2 p4 = vec2(0.2, 0.8) + vec2(sin(theta + PI/2.0), cos(theta + PI)) * radius;
+      
+      // Calculate distances from UV to each source
+      // We adjust aspect ratio influence slightly to keep it round-ish
+      float d1 = distance(uv, p1);
+      float d2 = distance(uv, p2);
+      float d3 = distance(uv, p3);
+      float d4 = distance(uv, p4);
+      
+      // Inverse Distance Weighting with "Blur" control (uNoiseScale)
+      // Higher uNoiseScale = sharper dots. Lower = more diffuse.
+      // We invert uNoiseScale so the slider feels intuitive (Higher scale = Big soft clouds)
+      float sharpness = 5.0 / max(0.1, uNoiseScale); 
+      
+      float w1 = 1.0 / pow(d1, sharpness);
+      float w2 = 1.0 / pow(d2, sharpness);
+      float w3 = 1.0 / pow(d3, sharpness);
+      float w4 = 1.0 / pow(d4, sharpness);
+      
+      // Sum weights
+      float totalWeight = w1 + w2 + w3 + w4;
+      
+      // Blend colors
+      vec3 finalColor = (uColor1 * w1 + uColor2 * w2 + uColor3 * w3 + uColor4 * w4) / totalWeight;
+      
+      // Add subtle dither to prevent banding
       float grain = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
-      finalColor += grain * 0.04;
+      finalColor += grain * 0.02;
 
       gl_FragColor = vec4(finalColor, 1.0);
     }
