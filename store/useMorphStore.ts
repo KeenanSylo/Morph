@@ -91,8 +91,8 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   
   // Wave Defaults
   waveLayers: 4,
-  waveHeight: 40,    // Reduced from 50
-  waveFrequency: 12, // Reduced from 20 for smoother initial look
+  waveHeight: 30,    // Lowered from 40 for calmer start
+  waveFrequency: 10, // Lowered from 12 for smoother start
   waveCurve: 'sine',
 
   // Grid Defaults
@@ -154,8 +154,11 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
       noiseScale: 0.5 + Math.random() * 2,
       gradientSpeed: 0.5 + Math.random() * 1.5,
       waveLayers: 3 + Math.floor(Math.random() * 5),
-      waveHeight: 20 + Math.floor(Math.random() * 60),
-      waveFrequency: 5 + Math.floor(Math.random() * 25),
+      
+      // Tuned for "Chiller" waves: Lower max height and frequency
+      waveHeight: 15 + Math.floor(Math.random() * 30), 
+      waveFrequency: 5 + Math.floor(Math.random() * 15),
+      
       gridDistortion: Math.random() * 100,
     };
   }),

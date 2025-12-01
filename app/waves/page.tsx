@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import WaveCanvas from "../../components/canvas/WaveCanvas";
-import ControlDeck from "../../components/ControlDeck";
 import ActionBar from "../../components/ActionBar";
 import { toPng } from "html-to-image";
 import download from "downloadjs";
 import { useMorphStore } from "../../store/useMorphStore";
 import { cn } from "../../lib/utils";
 import { GlassPanel } from "../../components/ui/GlassPanel";
-import { useShallow } from 'zustand/react/shallow';
+import { Layers, Palette } from "lucide-react";
 
-// Custom Controls for Waves (Inline for speed, usually would be separate file)
+// Tabbed Controls for Waves
 const WaveControls = () => {
+    const [activeTab, setActiveTab] = useState<'shape' | 'style'>('shape');
+    
     const { 
         waveLayers, setWaveLayers,
         waveHeight, setWaveHeight,
@@ -22,34 +23,89 @@ const WaveControls = () => {
 
     const labelClass = darkMode ? "text-neutral-400" : "text-slate-600";
     const accentClass = darkMode ? "bg-white/10 accent-orange-500" : "bg-slate-200 accent-blue-600";
+    const activeTabStyle = darkMode 
+        ? "bg-orange-500/10 text-orange-400 border border-orange-500/20" 
+        : "bg-white text-blue-600 shadow-sm border border-slate-100";
+    const inactiveTabStyle = darkMode 
+        ? "text-neutral-500 hover:text-neutral-300 hover:bg-white/5" 
+        : "text-slate-400 hover:text-slate-600";
 
     return (
-        <div className="p-5 space-y-6">
-             <div className="space-y-2">
-                <label className={cn("text-xs font-medium", labelClass)}>Stack Count</label>
-                <input type="range" min="2" max="8" value={waveLayers} onChange={(e) => setWaveLayers(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+        <div className="flex flex-col h-full">
+            {/* Tabs */}
+            <div className={cn("flex p-1.5 gap-1.5 border-b mb-2", darkMode ? "bg-black/20 border-white/5" : "bg-slate-100/50 border-slate-200")}>
+                <button
+                    onClick={() => setActiveTab('shape')}
+                    className={cn("flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-medium transition-all", activeTab === 'shape' ? activeTabStyle : inactiveTabStyle)}
+                >
+                    <Layers size={14} /> Shape
+                </button>
+                <button
+                    onClick={() => setActiveTab('style')}
+                    className={cn("flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-medium transition-all", activeTab === 'style' ? activeTabStyle : inactiveTabStyle)}
+                >
+                    <Palette size={14} /> Style
+                </button>
             </div>
-             <div className="space-y-2">
-                <label className={cn("text-xs font-medium", labelClass)}>Wave Height</label>
-                {/* Constrained max height to avoid overlapping chaos */}
-                <input type="range" min="10" max="60" value={waveHeight} onChange={(e) => setWaveHeight(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
-            </div>
-             <div className="space-y-2">
-                <label className={cn("text-xs font-medium", labelClass)}>Frequency</label>
-                {/* Constrained max frequency to prevent spikes */}
-                <input type="range" min="5" max="30" value={waveFrequency} onChange={(e) => setWaveFrequency(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
-            </div>
-             <div className="space-y-2">
-                <label className={cn("text-xs font-medium", labelClass)}>Flow Speed</label>
-                <input type="range" min="0" max="20" value={motionSpeed} onChange={(e) => setMotionSpeed(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
-            </div>
-            
-             <div className="space-y-2 border-t border-white/5 pt-4">
-                <label className={cn("text-xs font-medium", labelClass)}>Theme</label>
-                <div className="flex gap-2">
-                     <input type="color" value={gradientColors[0]} onChange={(e) => setGradientColor(0, e.target.value)} className="w-8 h-8 rounded cursor-pointer" />
-                     <input type="color" value={gradientColors[1]} onChange={(e) => setGradientColor(1, e.target.value)} className="w-8 h-8 rounded cursor-pointer" />
-                </div>
+
+            <div className="p-5 pt-2 space-y-5">
+                {activeTab === 'shape' && (
+                    <>
+                        <div className="space-y-2">
+                            <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
+                                <span>Stack Count</span>
+                                <span className="opacity-50 font-mono">{waveLayers}</span>
+                            </label>
+                            <input type="range" min="2" max="8" value={waveLayers} onChange={(e) => setWaveLayers(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                        </div>
+                        <div className="space-y-2">
+                            <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
+                                <span>Wave Height</span>
+                                <span className="opacity-50 font-mono">{waveHeight}</span>
+                            </label>
+                            {/* Constrained max height (40) to prevent covering screen */}
+                            <input type="range" min="5" max="40" value={waveHeight} onChange={(e) => setWaveHeight(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                        </div>
+                        <div className="space-y-2">
+                            <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
+                                <span>Frequency</span>
+                                <span className="opacity-50 font-mono">{waveFrequency}</span>
+                            </label>
+                            {/* Constrained max frequency (25) to prevent spikes */}
+                            <input type="range" min="2" max="25" value={waveFrequency} onChange={(e) => setWaveFrequency(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                        </div>
+                        <div className="space-y-2">
+                            <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
+                                <span>Flow Speed</span>
+                                <span className="opacity-50 font-mono">{motionSpeed}</span>
+                            </label>
+                            <input type="range" min="0" max="20" value={motionSpeed} onChange={(e) => setMotionSpeed(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                        </div>
+                    </>
+                )}
+
+                {activeTab === 'style' && (
+                    <div className="space-y-4">
+                        <label className={cn("text-xs font-medium", labelClass)}>Gradient Theme</label>
+                        <div className="space-y-3 bg-white/5 p-3 rounded-xl border border-white/5">
+                             <div className="space-y-1">
+                                <span className={cn("text-[10px] uppercase tracking-wider", darkMode ? "text-neutral-500" : "text-slate-400")}>Start Color</span>
+                                <div className="flex gap-2 items-center">
+                                    <input type="color" value={gradientColors[0]} onChange={(e) => setGradientColor(0, e.target.value)} className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0" />
+                                    <span className={cn("text-xs font-mono", darkMode ? "text-neutral-400" : "text-slate-500")}>{gradientColors[0]}</span>
+                                </div>
+                             </div>
+                             <div className="h-px bg-white/10" />
+                             <div className="space-y-1">
+                                <span className={cn("text-[10px] uppercase tracking-wider", darkMode ? "text-neutral-500" : "text-slate-400")}>End Color</span>
+                                <div className="flex gap-2 items-center">
+                                    <input type="color" value={gradientColors[1]} onChange={(e) => setGradientColor(1, e.target.value)} className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0" />
+                                    <span className={cn("text-xs font-mono", darkMode ? "text-neutral-400" : "text-slate-500")}>{gradientColors[1]}</span>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -78,10 +134,10 @@ export default function WavePage() {
       {!isExporting && (
         <>
           <ActionBar onDownload={handleDownload} />
-          {/* Custom Sidebar for Waves */}
-          <div className="fixed top-20 right-4 w-72">
-             <GlassPanel className={cn("h-auto", darkMode ? "bg-black/60 border-white/5" : "bg-white/70")}>
-                <div className="p-4 border-b border-white/5 font-bold text-sm text-neutral-300">Wave Controls</div>
+          {/* Custom Sidebar for Waves - High Z-index to float over waves */}
+          <div className="fixed top-24 right-4 w-72 z-50">
+             <GlassPanel className={cn("h-auto overflow-hidden", darkMode ? "bg-black/60 border-white/5" : "bg-white/70")}>
+                <div className="p-4 py-3 border-b border-white/5 font-bold text-sm text-neutral-300">Wave Controls</div>
                 <WaveControls />
              </GlassPanel>
           </div>

@@ -90,7 +90,7 @@ export default function WaveCanvas({ interactive = true }: WaveCanvasProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center pointer-events-none">
+    <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none">
       <svg 
         id="morph-svg-target"
         xmlns="http://www.w3.org/2000/svg"
