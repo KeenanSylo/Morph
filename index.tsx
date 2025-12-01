@@ -4,6 +4,9 @@ import RootLayout from "./app/layout";
 import LandingPage from "./app/page";
 import CreatePage from "./app/create/page";
 import GradientPage from "./app/gradient/page";
+import ExplorePage from "./app/explore/page";
+import WavePage from "./app/waves/page";
+import GridPage from "./app/grid/page";
 
 // Error Boundary to catch crashes and display them
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -52,12 +55,24 @@ const App = () => {
   }, []);
 
   let Component;
-  if (route === "/create") {
-    Component = CreatePage;
-  } else if (route === "/gradient") {
-    Component = GradientPage;
-  } else {
-    Component = LandingPage;
+  switch(route) {
+      case "/create":
+          Component = CreatePage;
+          break;
+      case "/gradient":
+          Component = GradientPage;
+          break;
+      case "/waves":
+          Component = WavePage;
+          break;
+      case "/grid":
+          Component = GridPage;
+          break;
+      case "/explore":
+          Component = ExplorePage;
+          break;
+      default:
+          Component = LandingPage;
   }
 
   return (

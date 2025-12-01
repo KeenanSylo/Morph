@@ -9,7 +9,7 @@ interface MorphState {
   warp: number;
   motionSpeed: number;
 
-  // Blob Style Properties
+  // Blob/Wave Style Properties
   fillType: 'solid' | 'linear' | 'radial';
   gradientColors: string[];
   glowIntensity: number;
@@ -18,7 +18,18 @@ interface MorphState {
   blurColors: string[];
   noiseScale: number;
   gradientSpeed: number;
-  loopDuration: number; // New: Length of the loop in seconds
+  loopDuration: number;
+  
+  // Wave Tool Params
+  waveLayers: number;
+  waveHeight: number;
+  waveFrequency: number;
+  waveCurve: 'sine' | 'step' | 'sawtooth';
+
+  // Neo-Grid Tool Params
+  gridSize: number;
+  gridDistortion: number;
+  gridSpeed: number;
   
   showSafeZone: boolean;
   isPaused: boolean;
@@ -37,11 +48,21 @@ interface MorphActions {
   setGradientColor: (index: number, color: string) => void;
   setGlowIntensity: (val: number) => void;
   
-  // Gradient Tool Actions
   setBlurColor: (index: number, color: string) => void;
   setNoiseScale: (val: number) => void;
   setGradientSpeed: (val: number) => void;
-  setLoopDuration: (val: number) => void; // New
+  setLoopDuration: (val: number) => void;
+
+  // Wave Setters
+  setWaveLayers: (val: number) => void;
+  setWaveHeight: (val: number) => void;
+  setWaveFrequency: (val: number) => void;
+  setWaveCurve: (val: 'sine' | 'step' | 'sawtooth') => void;
+
+  // Grid Setters
+  setGridSize: (val: number) => void;
+  setGridDistortion: (val: number) => void;
+  setGridSpeed: (val: number) => void;
   
   setShowSafeZone: (show: boolean) => void;
   setIsPaused: (paused: boolean) => void;
@@ -52,24 +73,36 @@ interface MorphActions {
 export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   shapeMode: 'blob',
   
+  // Blob Defaults
   chaos: 30,
   smoothness: 8,
   warp: 40,
   motionSpeed: 10,
   
   fillType: 'linear',
-  gradientColors: ['#F59E0B', '#DC2626'], 
+  gradientColors: ['#F59E0B', '#DC2626'], // Deep Ember Magma
   glowIntensity: 20,
   
-  // Default values for Gradient Blur Tool (Deep Ember Theme)
+  // Gradient Defaults
   blurColors: ['#0f172a', '#7c2d12', '#431407', '#000000'],
   noiseScale: 1.0,
   gradientSpeed: 1.0,
-  loopDuration: 10, // Default 10s loop
+  loopDuration: 10,
+  
+  // Wave Defaults
+  waveLayers: 4,
+  waveHeight: 40,    // Reduced from 50
+  waveFrequency: 12, // Reduced from 20 for smoother initial look
+  waveCurve: 'sine',
+
+  // Grid Defaults
+  gridSize: 20,
+  gridDistortion: 50,
+  gridSpeed: 1.0,
   
   showSafeZone: false,
   isPaused: false,
-  darkMode: true, // Deep Ember defaults to dark
+  darkMode: true,
 
   setShapeMode: (mode) => set({ shapeMode: mode }),
   
@@ -94,6 +127,15 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   setNoiseScale: (val) => set({ noiseScale: val }),
   setGradientSpeed: (val) => set({ gradientSpeed: val }),
   setLoopDuration: (val) => set({ loopDuration: val }),
+
+  setWaveLayers: (val) => set({ waveLayers: val }),
+  setWaveHeight: (val) => set({ waveHeight: val }),
+  setWaveFrequency: (val) => set({ waveFrequency: val }),
+  setWaveCurve: (val) => set({ waveCurve: val }),
+
+  setGridSize: (val) => set({ gridSize: val }),
+  setGridDistortion: (val) => set({ gridDistortion: val }),
+  setGridSpeed: (val) => set({ gridSpeed: val }),
   
   setShowSafeZone: (show) => set({ showSafeZone: show }),
   setIsPaused: (paused) => set({ isPaused: paused }),
@@ -111,6 +153,10 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
       blurColors: [randomColor(), randomColor(), randomColor(), randomColor()],
       noiseScale: 0.5 + Math.random() * 2,
       gradientSpeed: 0.5 + Math.random() * 1.5,
+      waveLayers: 3 + Math.floor(Math.random() * 5),
+      waveHeight: 20 + Math.floor(Math.random() * 60),
+      waveFrequency: 5 + Math.floor(Math.random() * 25),
+      gridDistortion: Math.random() * 100,
     };
   }),
 }));
