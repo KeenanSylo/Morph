@@ -200,6 +200,9 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
       gridDistortion: 20 + Math.floor(Math.random() * 80),
       gridSpeed: 0.5 + Math.random() * 2,
 
+      // Randomize Flux Parameters
+      // Cap density at 3700 as requested to prevent performance issues
+      fluxCount: 500 + Math.floor(Math.random() * 3200),
       fluxSpeed: 0.2 + Math.random() * 1.0,
       fluxChaos: 10 + Math.random() * 50,
       fluxSize: 1.0 + Math.random() * 2.0,

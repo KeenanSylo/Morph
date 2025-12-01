@@ -156,7 +156,7 @@ const Particles = () => {
     });
 
     return (
-        <points ref={pointsRef}>
+        <points ref={pointsRef} key={fluxCount}>
             <bufferGeometry>
                 <bufferAttribute
                     attach="attributes-position"
@@ -193,8 +193,8 @@ export default function FluxCanvas() {
                 <Particles />
                 <OrbitControls 
                     enableZoom={false} 
-                    autoRotate 
-                    autoRotateSpeed={0.2} 
+                    // Disabled autoRotate to prevent showing empty sides
+                    autoRotate={false}
                     maxPolarAngle={Math.PI / 1.5} 
                     minPolarAngle={Math.PI / 3}
                 />

@@ -67,7 +67,8 @@ const FluxControls = () => {
                     <div className="space-y-2">
                         <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
                             <span>Turbulence</span>
-                            <span className="opacity-50 font-mono">{fluxChaos}</span>
+                            {/* Round to integer to avoid long decimals or weird formatting */}
+                            <span className="opacity-50 font-mono">{Math.round(fluxChaos)}</span>
                         </label>
                         <input type="range" min="0" max="100" value={fluxChaos} onChange={(e) => setFluxChaos(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
                     </div>
