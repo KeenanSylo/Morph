@@ -16,6 +16,9 @@ const WaveControls = () => {
         waveLayers, setWaveLayers,
         waveHeight, setWaveHeight,
         waveFrequency, setWaveFrequency,
+        waveSpacing, setWaveSpacing,
+        wavePhase, setWavePhase,
+        waveRoughness, setWaveRoughness,
         motionSpeed, setMotionSpeed,
         gradientColors, setGradientColor,
         darkMode
@@ -48,7 +51,7 @@ const WaveControls = () => {
                 </button>
             </div>
 
-            <div className="p-5 pt-2 space-y-5">
+            <div className="p-5 pt-2 space-y-5 overflow-y-auto max-h-[70vh] custom-scrollbar">
                 {activeTab === 'shape' && (
                     <>
                         <div className="space-y-2">
@@ -56,25 +59,50 @@ const WaveControls = () => {
                                 <span>Stack Count</span>
                                 <span className="opacity-50 font-mono">{waveLayers}</span>
                             </label>
-                            <input type="range" min="2" max="8" value={waveLayers} onChange={(e) => setWaveLayers(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                            <input type="range" min="2" max="10" value={waveLayers} onChange={(e) => setWaveLayers(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
                         </div>
+                        
+                        <div className="space-y-2">
+                            <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
+                                <span>Vertical Spacing</span>
+                                <span className="opacity-50 font-mono">{waveSpacing}</span>
+                            </label>
+                            <input type="range" min="10" max="200" value={waveSpacing} onChange={(e) => setWaveSpacing(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                        </div>
+
                         <div className="space-y-2">
                             <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
                                 <span>Wave Height</span>
                                 <span className="opacity-50 font-mono">{waveHeight}</span>
                             </label>
-                            {/* Constrained max height (40) to prevent covering screen */}
-                            <input type="range" min="5" max="40" value={waveHeight} onChange={(e) => setWaveHeight(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                            <input type="range" min="5" max="80" value={waveHeight} onChange={(e) => setWaveHeight(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
                         </div>
+
                         <div className="space-y-2">
                             <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
                                 <span>Frequency</span>
                                 <span className="opacity-50 font-mono">{waveFrequency}</span>
                             </label>
-                            {/* Constrained max frequency (25) to prevent spikes */}
-                            <input type="range" min="2" max="25" value={waveFrequency} onChange={(e) => setWaveFrequency(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                            <input type="range" min="2" max="30" value={waveFrequency} onChange={(e) => setWaveFrequency(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
                         </div>
+
                         <div className="space-y-2">
+                            <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
+                                <span>Phase Offset</span>
+                                <span className="opacity-50 font-mono">{wavePhase}</span>
+                            </label>
+                            <input type="range" min="0" max="50" value={wavePhase} onChange={(e) => setWavePhase(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
+                                <span>Roughness</span>
+                                <span className="opacity-50 font-mono">{waveRoughness}</span>
+                            </label>
+                            <input type="range" min="0" max="50" value={waveRoughness} onChange={(e) => setWaveRoughness(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                        </div>
+
+                        <div className="space-y-2 border-t pt-4 border-white/5">
                             <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
                                 <span>Flow Speed</span>
                                 <span className="opacity-50 font-mono">{motionSpeed}</span>
@@ -107,6 +135,10 @@ const WaveControls = () => {
                     </div>
                 )}
             </div>
+            <style>{`
+              .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+              .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+            `}</style>
         </div>
     );
 }

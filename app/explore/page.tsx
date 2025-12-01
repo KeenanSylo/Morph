@@ -1,6 +1,6 @@
 import React from "react";
 import { GlassPanel } from "../../components/ui/GlassPanel";
-import { ArrowRight, Waves, Box, Circle, Layers } from "lucide-react";
+import { ArrowRight, Waves, Sparkles, Circle, Layers } from "lucide-react";
 import { useMorphStore } from "../../store/useMorphStore";
 import { cn } from "../../lib/utils";
 
@@ -39,10 +39,13 @@ const WavePreview = () => (
     </div>
 );
 
-const GridPreview = () => (
-    <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-500 perspective-1000">
-        <div className="absolute inset-[-50%] w-[200%] h-[200%] bg-[linear-gradient(to_right,#8b5cf6_1px,transparent_1px),linear-gradient(to_bottom,#8b5cf6_1px,transparent_1px)] bg-[size:40px_40px] [transform:rotateX(60deg)] animate-[float_10s_linear_infinite]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+// New Flux Preview
+const FluxPreview = () => (
+    <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-500">
+        <div className="absolute w-2 h-2 bg-purple-400 rounded-full top-1/4 left-1/4 shadow-[0_0_15px_rgba(192,132,252,0.8)] animate-pulse" />
+        <div className="absolute w-1.5 h-1.5 bg-indigo-400 rounded-full top-1/2 left-2/3 shadow-[0_0_10px_rgba(129,140,248,0.8)] animate-bounce" />
+        <div className="absolute w-1 h-1 bg-white rounded-full top-3/4 left-1/3 shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.1),transparent)]" />
     </div>
 );
 
@@ -97,7 +100,6 @@ export default function ExplorePage() {
 
     return (
         <main className={cn(
-            // Changed from min-h-screen to h-screen with overflow-y-auto to enable scrolling
             "h-screen w-full px-6 py-20 transition-colors duration-500 overflow-y-auto custom-scrollbar",
             darkMode ? "bg-black selection:bg-orange-500/30" : "bg-slate-50 selection:bg-blue-500/20"
         )}>
@@ -137,12 +139,12 @@ export default function ExplorePage() {
                         preview={WavePreview}
                     />
                     <GeneratorCard 
-                        title="Neo-Grid"
-                        desc="3D Terrain Grid distorted by noise. Retro-futuristic visuals."
-                        icon={Box}
-                        path="/grid"
+                        title="Flux Field"
+                        desc="Interactive particle flow simulation. Create stunning data streams."
+                        icon={Sparkles}
+                        path="/flux"
                         color="from-purple-500 to-indigo-600"
-                        preview={GridPreview}
+                        preview={FluxPreview}
                     />
                 </div>
                 

@@ -6,7 +6,7 @@ import CreatePage from "./app/create/page";
 import GradientPage from "./app/gradient/page";
 import ExplorePage from "./app/explore/page";
 import WavePage from "./app/waves/page";
-import GridPage from "./app/grid/page";
+import FluxPage from "./app/flux/page"; // Changed from GridPage
 
 // Error Boundary to catch crashes and display them
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -65,8 +65,8 @@ const App = () => {
       case "/waves":
           Component = WavePage;
           break;
-      case "/grid":
-          Component = GridPage;
+      case "/flux": // Updated Route
+          Component = FluxPage;
           break;
       case "/explore":
           Component = ExplorePage;

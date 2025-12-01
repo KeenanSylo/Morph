@@ -25,11 +25,20 @@ interface MorphState {
   waveHeight: number;
   waveFrequency: number;
   waveCurve: 'sine' | 'step' | 'sawtooth';
+  waveSpacing: number;   // New: Distance between layers
+  wavePhase: number;     // New: Offset between layers
+  waveRoughness: number; // New: Secondary noise detail
 
-  // Neo-Grid Tool Params
+  // Grid Tool Params
   gridSize: number;
   gridDistortion: number;
   gridSpeed: number;
+
+  // Flux Field Tool Params (New)
+  fluxCount: number;     // 100 to 10000
+  fluxSpeed: number;     // Flow velocity
+  fluxSize: number;      // Particle size
+  fluxChaos: number;     // Turbulence amount
   
   showSafeZone: boolean;
   isPaused: boolean;
@@ -58,11 +67,20 @@ interface MorphActions {
   setWaveHeight: (val: number) => void;
   setWaveFrequency: (val: number) => void;
   setWaveCurve: (val: 'sine' | 'step' | 'sawtooth') => void;
+  setWaveSpacing: (val: number) => void;
+  setWavePhase: (val: number) => void;
+  setWaveRoughness: (val: number) => void;
 
   // Grid Setters
   setGridSize: (val: number) => void;
   setGridDistortion: (val: number) => void;
   setGridSpeed: (val: number) => void;
+
+  // Flux Setters
+  setFluxCount: (val: number) => void;
+  setFluxSpeed: (val: number) => void;
+  setFluxSize: (val: number) => void;
+  setFluxChaos: (val: number) => void;
   
   setShowSafeZone: (show: boolean) => void;
   setIsPaused: (paused: boolean) => void;
@@ -91,14 +109,23 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   
   // Wave Defaults
   waveLayers: 4,
-  waveHeight: 30,    // Lowered from 40 for calmer start
-  waveFrequency: 10, // Lowered from 12 for smoother start
+  waveHeight: 120,    
+  waveFrequency: 3, 
   waveCurve: 'sine',
+  waveSpacing: 100, // Default spacing
+  wavePhase: 20,    // Default phase shift
+  waveRoughness: 20,// Default roughness
 
   // Grid Defaults
-  gridSize: 20,
+  gridSize: 30,
   gridDistortion: 50,
   gridSpeed: 1.0,
+
+  // Flux Defaults
+  fluxCount: 3000,
+  fluxSpeed: 0.5,
+  fluxSize: 1.5,
+  fluxChaos: 30,
   
   showSafeZone: false,
   isPaused: false,
@@ -132,10 +159,18 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   setWaveHeight: (val) => set({ waveHeight: val }),
   setWaveFrequency: (val) => set({ waveFrequency: val }),
   setWaveCurve: (val) => set({ waveCurve: val }),
+  setWaveSpacing: (val) => set({ waveSpacing: val }),
+  setWavePhase: (val) => set({ wavePhase: val }),
+  setWaveRoughness: (val) => set({ waveRoughness: val }),
 
   setGridSize: (val) => set({ gridSize: val }),
   setGridDistortion: (val) => set({ gridDistortion: val }),
   setGridSpeed: (val) => set({ gridSpeed: val }),
+
+  setFluxCount: (val) => set({ fluxCount: val }),
+  setFluxSpeed: (val) => set({ fluxSpeed: val }),
+  setFluxSize: (val) => set({ fluxSize: val }),
+  setFluxChaos: (val) => set({ fluxChaos: val }),
   
   setShowSafeZone: (show) => set({ showSafeZone: show }),
   setIsPaused: (paused) => set({ isPaused: paused }),
@@ -155,11 +190,19 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
       gradientSpeed: 0.5 + Math.random() * 1.5,
       waveLayers: 3 + Math.floor(Math.random() * 5),
       
-      // Tuned for "Chiller" waves: Lower max height and frequency
-      waveHeight: 15 + Math.floor(Math.random() * 30), 
-      waveFrequency: 5 + Math.floor(Math.random() * 15),
+      waveHeight: 80 + Math.floor(Math.random() * 100), 
+      waveFrequency: 2 + Math.floor(Math.random() * 6),
+      waveSpacing: 30 + Math.floor(Math.random() * 100),
+      wavePhase: Math.floor(Math.random() * 50),
+      waveRoughness: Math.floor(Math.random() * 40),
       
-      gridDistortion: Math.random() * 100,
+      gridSize: 20 + Math.floor(Math.random() * 30),
+      gridDistortion: 20 + Math.floor(Math.random() * 80),
+      gridSpeed: 0.5 + Math.random() * 2,
+
+      fluxSpeed: 0.2 + Math.random() * 1.0,
+      fluxChaos: 10 + Math.random() * 50,
+      fluxSize: 1.0 + Math.random() * 2.0,
     };
   }),
 }));
