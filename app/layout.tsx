@@ -1,6 +1,5 @@
 import React from "react";
 import "./globals.css";
-import { cn } from "../lib/utils";
 
 export const metadata = {
   title: "Morph",
@@ -13,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#0a0a0a] to-black text-white antialiased font-sans selection:bg-orange-500/30")}>
+    <div className="min-h-screen bg-neutral-900 text-white antialiased">
       {children}
     </div>
   );
