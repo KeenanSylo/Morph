@@ -28,6 +28,7 @@ interface MorphState {
   waveSpacing: number;   // New: Distance between layers
   wavePhase: number;     // New: Offset between layers
   waveRoughness: number; // New: Secondary noise detail
+  baseHeight: number;    // New: Controls the vertical position of the bottom wave
 
   // Grid Tool Params
   gridSize: number;
@@ -70,6 +71,7 @@ interface MorphActions {
   setWaveSpacing: (val: number) => void;
   setWavePhase: (val: number) => void;
   setWaveRoughness: (val: number) => void;
+  setBaseHeight: (val: number) => void;
 
   // Grid Setters
   setGridSize: (val: number) => void;
@@ -115,6 +117,7 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   waveSpacing: 100, // Default spacing
   wavePhase: 20,    // Default phase shift
   waveRoughness: 20,// Default roughness
+  baseHeight: 150,  // Default bottom wave position
 
   // Grid Defaults
   gridSize: 30,
@@ -162,6 +165,7 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   setWaveSpacing: (val) => set({ waveSpacing: val }),
   setWavePhase: (val) => set({ wavePhase: val }),
   setWaveRoughness: (val) => set({ waveRoughness: val }),
+  setBaseHeight: (val) => set({ baseHeight: val }),
 
   setGridSize: (val) => set({ gridSize: val }),
   setGridDistortion: (val) => set({ gridDistortion: val }),
@@ -190,11 +194,12 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
       gradientSpeed: 0.5 + Math.random() * 1.5,
       waveLayers: 3 + Math.floor(Math.random() * 5),
       
-      waveHeight: 80 + Math.floor(Math.random() * 100), 
+      waveHeight: 30 + Math.floor(Math.random() * 120), 
       waveFrequency: 2 + Math.floor(Math.random() * 6),
       waveSpacing: 30 + Math.floor(Math.random() * 100),
       wavePhase: Math.floor(Math.random() * 50),
       waveRoughness: Math.floor(Math.random() * 40),
+      baseHeight: 50 + Math.floor(Math.random() * 200),
       
       gridSize: 20 + Math.floor(Math.random() * 30),
       gridDistortion: 20 + Math.floor(Math.random() * 80),

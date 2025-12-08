@@ -19,6 +19,7 @@ const WaveControls = () => {
         waveSpacing, setWaveSpacing,
         wavePhase, setWavePhase,
         waveRoughness, setWaveRoughness,
+        baseHeight, setBaseHeight,
         motionSpeed, setMotionSpeed,
         gradientColors, setGradientColor,
         darkMode
@@ -75,7 +76,15 @@ const WaveControls = () => {
                                 <span>Wave Height</span>
                                 <span className="opacity-50 font-mono">{waveHeight}</span>
                             </label>
-                            <input type="range" min="5" max="80" value={waveHeight} onChange={(e) => setWaveHeight(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                            <input type="range" min="5" max="150" value={waveHeight} onChange={(e) => setWaveHeight(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className={cn("text-xs font-medium flex justify-between", labelClass)}>
+                                <span>Bottom Wave Height</span>
+                                <span className="opacity-50 font-mono">{baseHeight}</span>
+                            </label>
+                            <input type="range" min="50" max="300" value={baseHeight} onChange={(e) => setBaseHeight(Number(e.target.value))} className={cn("w-full h-1.5 rounded-lg appearance-none cursor-pointer", accentClass)} />
                         </div>
 
                         <div className="space-y-2">

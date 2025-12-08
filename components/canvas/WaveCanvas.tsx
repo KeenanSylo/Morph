@@ -15,6 +15,7 @@ export default function WaveCanvas({ interactive = true }: WaveCanvasProps) {
   const spacing = interactive ? store.waveSpacing : 100;
   const phase = interactive ? store.wavePhase : 20;
   const roughness = interactive ? store.waveRoughness : 20;
+  const baseHeight = interactive ? store.baseHeight : 150;
   
   const colors = interactive ? store.gradientColors : ['#F59E0B', '#DC2626'];
   const isPaused = interactive ? store.isPaused : false;
@@ -41,17 +42,17 @@ export default function WaveCanvas({ interactive = true }: WaveCanvasProps) {
       for (let i = 0; i < layers; i++) {
         // Vertical Position:
         // Start from bottom minus offset, then stack upwards based on spacing
-        const yBase = viewBoxHeight - (i * spacing) - 150;
+        const yBase = viewBoxHeight - (i * spacing) - baseHeight;
         
-        // Dynamic Amplitude: Back layers are bigger, front are flatter
-        const layerAmp = height * 1.5 * (1 + i * 0.3); 
+        // Dynamic Amplitude: Much gentler progression for cohesive look
+        const layerAmp = height * (0.6 + i * 0.1); 
         
-        // Dynamic Frequency: Lower freq = smoother
+        // Dynamic Frequency: Very subtle variation between layers
         const baseFreq = 0.002 + (freq / 10000); 
-        const layerFreq = baseFreq * (1 + i * 0.2);
+        const layerFreq = baseFreq * (1 + i * 0.05);
         
-        // Phase shift: controls how aligned the waves are
-        const layerPhase = i * (phase / 10) + timeRef.current;
+        // Phase shift: Gentler offset so waves move more together
+        const layerPhase = i * (phase / 30) + timeRef.current;
         
         // Generate Control Points
         const points: [number, number][] = [];
@@ -59,11 +60,11 @@ export default function WaveCanvas({ interactive = true }: WaveCanvasProps) {
             const x = j * spacingX;
             
             // Multi-Octave Sine for organic look
-            // Wave 1: Main swell
-            const w1 = Math.sin(x * layerFreq * 5 + layerPhase);
+            // Wave 1: Main swell - reduced frequency for smoother waves
+            const w1 = Math.sin(x * layerFreq * 3 + layerPhase);
             
-            // Wave 2: Detail/Roughness
-            const w2 = Math.sin(x * layerFreq * 11 + layerPhase * 1.5) * (roughness / 100);
+            // Wave 2: Detail/Roughness - much more subtle
+            const w2 = Math.sin(x * layerFreq * 11 + layerPhase * 1.5) * (roughness / 300);
             
             const noise = (w1 + w2); 
             const y = yBase + noise * layerAmp;
@@ -88,7 +89,7 @@ export default function WaveCanvas({ interactive = true }: WaveCanvasProps) {
 
     render();
     return () => cancelAnimationFrame(animationFrameRef.current);
-  }, [layers, height, freq, speed, spacing, phase, roughness, isPaused]);
+  }, [layers, height, freq, speed, spacing, phase, roughness, baseHeight, isPaused]);
 
   // Interpolate colors helper
   const getLayerColor = (index: number) => {
