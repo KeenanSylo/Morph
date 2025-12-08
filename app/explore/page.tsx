@@ -1,6 +1,6 @@
 import React from "react";
 import { GlassPanel } from "../../components/ui/GlassPanel";
-import { ArrowRight, Waves, Sparkles, Circle, Layers } from "lucide-react";
+import { ArrowRight, Waves, Sparkles, Circle, Layers, Grid3x3, Droplet, Box, Orbit, Blend } from "lucide-react";
 import { useMorphStore } from "../../store/useMorphStore";
 import { cn } from "../../lib/utils";
 
@@ -49,6 +49,111 @@ const FluxPreview = () => (
     </div>
 );
 
+const GridPreview = () => (
+    <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500">
+        <div className="absolute inset-0 grid grid-cols-8 grid-rows-8 gap-1 p-4 transform rotate-12 scale-75 group-hover:scale-90 transition-transform duration-500">
+            {Array.from({ length: 64 }).map((_, i) => (
+                <div 
+                    key={i} 
+                    className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-sm opacity-60"
+                    style={{ 
+                        animationDelay: `${i * 20}ms`,
+                        transform: `translateY(${Math.sin(i) * 10}px)`
+                    }}
+                />
+            ))}
+        </div>
+    </div>
+);
+
+const SwarmPreview = () => (
+    <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-500">
+        {Array.from({ length: 30 }).map((_, i) => {
+            const angle = (i / 30) * Math.PI * 2;
+            const radius = 30 + (i % 3) * 20;
+            const x = 50 + Math.cos(angle) * radius;
+            const y = 50 + Math.sin(angle) * radius;
+            return (
+                <div 
+                    key={i}
+                    className="absolute w-1.5 h-1.5 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full shadow-[0_0_10px_rgba(6,182,212,0.6)]"
+                    style={{
+                        left: `${x}%`,
+                        top: `${y}%`,
+                        animation: `float ${3 + (i % 3)}s ease-in-out infinite`,
+                        animationDelay: `${i * 0.1}s`
+                    }}
+                />
+            );
+        })}
+    </div>
+);
+
+const SpiralPreview = () => (
+    <div className="absolute inset-0 opacity-35 group-hover:opacity-55 transition-opacity duration-500">
+        <svg viewBox="0 0 200 200" className="w-full h-full animate-spin-slow">
+            <defs>
+                <radialGradient id="spiral-grad">
+                    <stop offset="0%" stopColor="#fbbf24" />
+                    <stop offset="100%" stopColor="#f59e0b" />
+                </radialGradient>
+            </defs>
+            {[0, 1, 2].map(arm => {
+                const points = Array.from({ length: 50 }, (_, i) => {
+                    const t = i / 50;
+                    const angle = arm * (Math.PI * 2 / 3) + t * Math.PI * 4;
+                    const r = t * 80;
+                    return `${100 + Math.cos(angle) * r},${100 + Math.sin(angle) * r}`;
+                }).join(' ');
+                return <polyline key={arm} points={points} fill="none" stroke="url(#spiral-grad)" strokeWidth="2" opacity="0.6" />;
+            })}
+        </svg>
+    </div>
+);
+
+const NoisePreview = () => (
+    <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 opacity-40 blur-2xl animate-pulse" />
+        <div className="absolute inset-0" style={{
+            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px)`,
+        }} />
+    </div>
+);
+
+const MeshPreview = () => (
+    <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-500 flex items-center justify-center">
+        <div className="relative w-32 h-32 group-hover:scale-110 transition-transform duration-500">
+            <div className="absolute inset-0 rounded-full border-4 border-red-400 opacity-30 animate-ping" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-400 to-rose-600 blur-xl opacity-50" />
+            <svg viewBox="0 0 100 100" className="w-full h-full animate-spin-slow">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="url(#mesh-grad)" strokeWidth="2" opacity="0.8" />
+                <circle cx="50" cy="50" r="30" fill="none" stroke="url(#mesh-grad)" strokeWidth="1.5" opacity="0.6" />
+                <circle cx="50" cy="50" r="20" fill="none" stroke="url(#mesh-grad)" strokeWidth="1" opacity="0.4" />
+                <defs>
+                    <linearGradient id="mesh-grad">
+                        <stop offset="0%" stopColor="#f87171" />
+                        <stop offset="100%" stopColor="#dc2626" />
+                    </linearGradient>
+                </defs>
+            </svg>
+        </div>
+    </div>
+);
+
+const CurveGradientPreview = () => (
+    <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-500">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-rose-500 to-violet-600 animate-gradient-shift" 
+             style={{ 
+                 backgroundSize: '400% 400%',
+             }} 
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.3),transparent)] animate-pulse" />
+        <svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 200">
+            <path d="M 10 100 Q 50 50, 100 100 T 190 100" stroke="rgba(255,255,255,0.4)" strokeWidth="2" fill="none" className="animate-float" />
+            <path d="M 10 120 Q 50 170, 100 120 T 190 120" stroke="rgba(255,255,255,0.3)" strokeWidth="2" fill="none" style={{ animationDelay: '0.5s' }} className="animate-float" />
+        </svg>
+    </div>
+);
 
 const GeneratorCard = ({ title, desc, icon: Icon, path, color, preview: Preview }: any) => {
     const { darkMode } = useMorphStore();
@@ -146,6 +251,54 @@ export default function ExplorePage() {
                         color="from-purple-500 to-indigo-600"
                         preview={FluxPreview}
                     />
+                    <GeneratorCard 
+                        title="Low Poly Grid"
+                        desc="3D animated grid terrain with dynamic distortion and lighting."
+                        icon={Grid3x3}
+                        path="/grid"
+                        color="from-emerald-500 to-teal-600"
+                        preview={GridPreview}
+                    />
+                    <GeneratorCard 
+                        title="Particle Swarm"
+                        desc="Flocking behavior simulation with trails and interactive mouse control."
+                        icon={Droplet}
+                        path="/swarm"
+                        color="from-cyan-500 to-blue-600"
+                        preview={SwarmPreview}
+                    />
+                    <GeneratorCard 
+                        title="Spiral Galaxy"
+                        desc="Rotating spiral arms with star particles and glowing core effects."
+                        icon={Orbit}
+                        path="/spiral"
+                        color="from-yellow-500 to-orange-600"
+                        preview={SpiralPreview}
+                    />
+                    <GeneratorCard 
+                        title="Noise Field"
+                        desc="Perlin noise visualization with octaves, persistence, and animation."
+                        icon={Layers}
+                        path="/noise"
+                        color="from-violet-500 to-fuchsia-600"
+                        preview={NoisePreview}
+                    />
+                    <GeneratorCard 
+                        title="Mesh Morph"
+                        desc="3D morphing sphere with wave displacement and interactive camera."
+                        icon={Box}
+                        path="/mesh"
+                        color="from-red-500 to-rose-600"
+                        preview={MeshPreview}
+                    />
+                    <GeneratorCard 
+                        title="Curve Gradient"
+                        desc="Animated multi-color gradient with fractal noise curves and smooth transitions."
+                        icon={Blend}
+                        path="/curve"
+                        color="from-amber-500 via-rose-500 to-violet-600"
+                        preview={CurveGradientPreview}
+                    />
                 </div>
                 
                 <footer className="mt-20 text-center text-sm text-neutral-500">
@@ -170,6 +323,25 @@ export default function ExplorePage() {
               }
               .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                 background-color: ${darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'};
+              }
+              @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+              }
+              @keyframes spin-slow {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+              }
+              .animate-spin-slow {
+                animation: spin-slow 20s linear infinite;
+              }
+              @keyframes gradient-shift {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+              }
+              .animate-gradient-shift {
+                animation: gradient-shift 10s ease infinite;
               }
             `}</style>
         </main>
