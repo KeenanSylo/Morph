@@ -3,7 +3,7 @@ import { Canvas, useFrame, extend } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useMorphStore } from '../../store/useMorphStore';
 
-// Curve Gradient Shader Material
+// Curve Gradient Shader Material - Silk-like smooth gradients
 class CurveGradientMaterial extends THREE.ShaderMaterial {
   constructor() {
     super({
@@ -16,12 +16,12 @@ class CurveGradientMaterial extends THREE.ShaderMaterial {
         u_density: { value: 1.0 },
         u_speed: { value: 1.0 },
         u_noise: { value: 0.1 },
-        u_color_0: { value: new THREE.Color('#f59e0b') },
-        u_color_1: { value: new THREE.Color('#dc2626') },
-        u_color_2: { value: new THREE.Color('#7c3aed') },
-        u_color_3: { value: new THREE.Color('#0f172a') },
-        u_color_4: { value: new THREE.Color('#1e293b') },
-        u_color_5: { value: new THREE.Color('#334155') },
+        u_color_0: { value: new THREE.Color('#e0f2fe') },
+        u_color_1: { value: new THREE.Color('#ddd6fe') },
+        u_color_2: { value: new THREE.Color('#fce7f3') },
+        u_color_3: { value: new THREE.Color('#bfdbfe') },
+        u_color_4: { value: new THREE.Color('#fbcfe8') },
+        u_color_5: { value: new THREE.Color('#e9d5ff') },
       },
       vertexShader: `
         varying vec2 vUv;
@@ -48,87 +48,110 @@ class CurveGradientMaterial extends THREE.ShaderMaterial {
         
         varying vec2 vUv;
         
-        // Noise function
-        float random(vec2 co) {
-          return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+        // Ultra-smooth interpolation (Ken Perlin's smootherstep)
+        float smootherstep(float edge0, float edge1, float x) {
+          x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+          return x * x * x * (x * (x * 6.0 - 15.0) + 10.0);
         }
         
-        // 2D Noise
-        float noise(vec2 st) {
-          vec2 i = floor(st);
-          vec2 f = fract(st);
-          float a = random(i);
-          float b = random(i + vec2(1.0, 0.0));
-          float c = random(i + vec2(0.0, 1.0));
-          float d = random(i + vec2(1.0, 1.0));
+        // Hash for smooth noise
+        vec2 hash2(vec2 p) {
+          p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+          return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+        }
+        
+        // Smooth Perlin-like noise
+        float perlinNoise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
           vec2 u = f * f * (3.0 - 2.0 * f);
-          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+          
+          return mix(
+            mix(dot(hash2(i + vec2(0.0, 0.0)), f - vec2(0.0, 0.0)),
+                dot(hash2(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0)), u.x),
+            mix(dot(hash2(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0)),
+                dot(hash2(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x),
+            u.y) * 0.5 + 0.5;
         }
         
-        // Fractal Brownian Motion
-        float fbm(vec2 st) {
+        // Layered noise for organic patterns
+        float fbm(vec2 p) {
           float value = 0.0;
           float amplitude = 0.5;
-          float frequency = 1.0;
-          for (int i = 0; i < 6; i++) {
-            value += amplitude * noise(st * frequency);
-            frequency *= 2.0;
+          for (int i = 0; i < 4; i++) {
+            value += amplitude * perlinNoise(p);
+            p *= 2.0;
             amplitude *= 0.5;
           }
           return value;
         }
         
-        // Smooth curve function
-        float smoothCurve(float t) {
-          return t * t * (3.0 - 2.0 * t);
-        }
-        
         void main() {
-          vec2 st = vUv;
-          vec2 resolution = u_resolution * u_scale;
+          vec2 uv = vUv;
+          float time = u_time * 0.1;
           
-          // Create animated curve patterns
-          float time = u_time * 0.5;
-          vec2 pos = st * u_expand + vec2(u_random * 10.0);
+          // Gentle noise for organic flow
+          float noise = fbm(uv * u_expand * 0.3 + vec2(time * 0.08, time * 0.06)) * 0.5 + 0.5;
           
-          // Multiple layers of noise for complexity
-          float n1 = fbm(pos + time * 0.3);
-          float n2 = fbm(pos * 2.0 - time * 0.2);
-          float n3 = fbm(pos * 0.5 + time * 0.4);
+          // Create diagonal flowing ribbons
+          vec2 flow = uv;
+          flow.x += sin(uv.y * 2.5 + time + noise * 1.5) * 0.2;
+          flow.y += cos(uv.x * 2.0 - time * 0.8 + noise * 1.5) * 0.15;
           
-          // Combine noise patterns to create curves
-          float pattern = n1 * 0.5 + n2 * 0.3 + n3 * 0.2;
-          pattern = smoothCurve(pattern);
+          // Main ribbon pattern - diagonal waves creating silk folds
+          float ribbonPattern = sin(flow.x * u_expand + flow.y * u_expand * 0.6 + time);
           
-          // Create color zones with smooth transitions
-          float zone = pattern * 5.0 + sin(st.x * 3.14159 + time) * 0.5;
-          zone = fract(zone * u_density);
+          // Sharp, defined ribbon edges
+          float ribbonValue = fract(ribbonPattern * u_density * 0.5 + 0.5);
           
-          // Blend between 6 colors based on the pattern
-          vec3 color;
-          if (zone < 0.166) {
-            float t = zone / 0.166;
-            color = mix(u_color_0, u_color_1, smoothCurve(t));
-          } else if (zone < 0.333) {
-            float t = (zone - 0.166) / 0.167;
-            color = mix(u_color_1, u_color_2, smoothCurve(t));
-          } else if (zone < 0.5) {
-            float t = (zone - 0.333) / 0.167;
-            color = mix(u_color_2, u_color_3, smoothCurve(t));
-          } else if (zone < 0.666) {
-            float t = (zone - 0.5) / 0.166;
-            color = mix(u_color_3, u_color_4, smoothCurve(t));
-          } else if (zone < 0.833) {
-            float t = (zone - 0.666) / 0.167;
-            color = mix(u_color_4, u_color_5, smoothCurve(t));
+          // Create the 3D fold effect with sharp highlights and shadows
+          float fold = sin(ribbonValue * 3.14159);
+          fold = pow(fold, 0.7); // Sharper peaks
+          
+          // Define clear highlights (top of folds) and shadows (valleys)
+          float lighting = fold * 0.5 + 0.5;
+          lighting = smootherstep(0.3, 0.7, lighting);
+          
+          // Map color based on position
+          float colorPos = ribbonValue;
+          colorPos = smootherstep(0.0, 1.0, colorPos);
+          
+          // Blend through all 6 colors
+          float t = colorPos * 5.0;
+          vec3 baseColor;
+          
+          if (t < 1.0) {
+            baseColor = mix(u_color_0, u_color_1, smootherstep(0.0, 1.0, t));
+          } else if (t < 2.0) {
+            baseColor = mix(u_color_1, u_color_2, smootherstep(0.0, 1.0, t - 1.0));
+          } else if (t < 3.0) {
+            baseColor = mix(u_color_2, u_color_3, smootherstep(0.0, 1.0, t - 2.0));
+          } else if (t < 4.0) {
+            baseColor = mix(u_color_3, u_color_4, smootherstep(0.0, 1.0, t - 3.0));
           } else {
-            float t = (zone - 0.833) / 0.167;
-            color = mix(u_color_5, u_color_0, smoothCurve(t));
+            baseColor = mix(u_color_4, u_color_5, smootherstep(0.0, 1.0, t - 4.0));
           }
           
-          // Add film grain noise
-          float grain = (random(vUv + time * 0.1) - 0.5) * u_noise;
-          color = color + color * grain;
+          // Apply 3D lighting to create silk sheet appearance
+          vec3 color = baseColor * lighting;
+          
+          // Add bright highlights on fold peaks
+          float highlight = smoothstep(0.85, 1.0, fold) * 0.3;
+          color += vec3(highlight);
+          
+          // Add shadows in valleys
+          float shadow = smoothstep(0.0, 0.2, fold);
+          color = mix(color * 0.6, color, shadow);
+          
+          // Subtle ambient occlusion in creases
+          float ao = smoothstep(0.4, 0.6, fold) * 0.1 + 0.9;
+          color *= ao;
+          
+          // Very minimal grain
+          float grain = fract(sin(dot(uv + time * 0.01, vec2(12.9898, 78.233))) * 43758.5453);
+          color += (grain - 0.5) * u_noise * 0.01;
+          
+          color = clamp(color, 0.0, 1.0);
           
           gl_FragColor = vec4(color, 1.0);
         }

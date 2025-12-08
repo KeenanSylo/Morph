@@ -252,12 +252,12 @@ export const useMorphStore = create<MorphState & MorphActions>((set) => ({
   meshColorCount: 3,
   
   // Curve Gradient Defaults
-  curveSpeed: 1.0,
+  curveSpeed: 1.5,
   curveScale: 1.0,
-  curveDensity: 1.0,
-  curveExpand: 6.0,
-  curveNoise: 0.1,
-  curveColors: ['#f59e0b', '#dc2626', '#7c3aed', '#0f172a', '#1e293b', '#334155'],
+  curveDensity: 2.0,
+  curveExpand: 3.0,
+  curveNoise: 0.08,
+  curveColors: ['#e0f2fe', '#ddd6fe', '#fce7f3', '#bfdbfe', '#fbcfe8', '#e9d5ff'],
   
   showSafeZone: false,
   isPaused: false,
